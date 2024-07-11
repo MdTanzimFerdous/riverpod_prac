@@ -1,12 +1,12 @@
 class FilterPrefsViewGeneric {
-  List<int> priorities;
+  List<bool> priorities;
 
   FilterPrefsViewGeneric({
-    this.priorities = const [],
+    this.priorities = const [false, false, false, false, false],
   });
 
   FilterPrefsViewGeneric update({
-    required List<int>? priorities,
+    required List<bool>? priorities,
   }) {
     return FilterPrefsViewGeneric(
       priorities: priorities ?? this.priorities,

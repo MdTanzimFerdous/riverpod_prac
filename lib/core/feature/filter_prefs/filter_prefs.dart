@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_prac/constants/constants.dart';
+import 'package:riverpod_prac/core/view_models/filter_prefs/filter_prefs_view_model.dart';
 import 'package:riverpod_prac/core/view_models/home/home_view_model.dart';
 import 'package:uuid/uuid.dart';
 
@@ -21,14 +22,14 @@ class _AddTaskState extends ConsumerState<FilterPrefs> {
     // TODO: implement initState
     super.initState();
 
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      ref.read(homeProvider.notifier).fetchTodo();
-    });
+    // WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+    //   ref.read(homeProvider.notifier).fetchTodo();
+    // });
   }
 
   @override
   Widget build(BuildContext context) {
-    final homeController = ref.watch(homeProvider);
+    final filterPrefsController = ref.watch(filterPrefsProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -40,16 +41,17 @@ class _AddTaskState extends ConsumerState<FilterPrefs> {
             color: Colors.blueGrey,
           ),
         ),
-        actions: [if (homeController.isLoading) const CircularProgressIndicator()],
       ),
       body: Column(
         children: [
           for(var i = 0; i < AppConstant.priorityMeans.length; i++)
             CheckboxListTile(
               title: Text(AppConstant.priorityMeans[i]),
-              value: false, //homeController.highPriorityFilter,
+              value: filterPrefsController.priorities[i], //homeController.highPriorityFilter,
               onChanged: (newValue) {
                 // ref.read(homeProvider.notifier).toggleHighPriorityFilter(newValue ?? false);
+                // filterPrefsController.priorities[i] = !filterPrefsController.priorities[i];
+                ref.read(filterPrefsProvider.notifier).toggleCheck(index: i);
               },
             ),
           // Add more CheckboxListTile widgets for additional filters
