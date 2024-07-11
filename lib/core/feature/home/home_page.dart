@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_prac/constants/constants.dart';
 import 'package:riverpod_prac/core/models/todo_model.dart';
+import 'package:riverpod_prac/core/view_models/filter_prefs/filter_prefs_view_model.dart';
 import 'package:riverpod_prac/core/view_models/home/home_view_model.dart';
 import 'package:uuid/uuid.dart';
 
@@ -32,6 +33,7 @@ class _HomeState extends ConsumerState<Home> {
   @override
   Widget build(BuildContext context) {
     final homeController = ref.watch(homeProvider);
+    final filterController = ref.watch(filterPrefsProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -114,6 +116,8 @@ class _HomeState extends ConsumerState<Home> {
                 itemCount: homeController.todos.length,
                 itemBuilder: (context, index) {
                   Todo singleTodo = homeController.todos[index];
+                  final filtered = homeController.todos.where((element) => element.taskPriorityLevel == homeController.todos[index].taskPriorityLevel);
+                  print(filtered.length);
                   return Container(
                     padding: const EdgeInsets.all(12.0),
                     margin: const EdgeInsets.symmetric(
