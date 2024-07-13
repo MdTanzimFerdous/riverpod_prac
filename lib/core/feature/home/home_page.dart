@@ -251,10 +251,18 @@ class _HomeState extends ConsumerState<Home> {
                                                       // Navigator.of(context).pop();
 
                                                       if (_updatedTaskName.text.isNotEmpty) {
+                                                        // final result = await showDialog<Map<String, dynamic>>(
+                                                        //   context: context,
+                                                        //   builder: (context) => const TaskDetailsDialog(),
+                                                        // );
                                                         final result = await showDialog<Map<String, dynamic>>(
                                                           context: context,
-                                                          builder: (context) => const TaskDetailsDialog(),
+                                                          builder: (context) => TaskDetailsDialog(
+                                                            initialPriority: singleTodo.taskPriorityLevel,
+                                                            initialCategory: singleTodo.taskCategory,
+                                                          ),
                                                         );
+
                                                         if (result != null) {
                                                           print(result['priority']);
                                                           print(result['category']);

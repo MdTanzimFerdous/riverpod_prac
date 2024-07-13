@@ -3,7 +3,7 @@ import 'package:riverpod_prac/core/database/app_database.dart';
 
 final sl = GetIt.I;
 
-setupServiceLocator()async{
+setupServiceLocator() async {
   final appDatabase = AppDatabase();
   await appDatabase.setupDB();
   sl.registerLazySingleton<AppDatabase>(() => appDatabase);

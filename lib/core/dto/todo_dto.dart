@@ -13,7 +13,7 @@ class TodoDto{
 
       await todoStore.record(todo.id).put(appDatabase.db, todo.toJson());
 
-    }catch(e){
+    } catch(e) {
       print("Database insertion failed");
     }
   }
@@ -41,7 +41,7 @@ class TodoDto{
 
       return result.map((e) => Todo.fromJson(e.value)).toList();
 
-    }catch(e){
+    } catch(e) {
       print("Database insertion failed");
     }
     return [];
