@@ -2,7 +2,7 @@ class FilterPrefsViewGeneric {
   List<bool> priorities;
 
   FilterPrefsViewGeneric({
-    this.priorities = const [false, false, false, false, false],
+    this.priorities = const [true, true, true, true, true],
   });
 
   FilterPrefsViewGeneric update({
