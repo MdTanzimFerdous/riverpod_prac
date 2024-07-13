@@ -5,33 +5,60 @@ import 'package:riverpod_prac/core/view_models/home/home_view_generic.dart';
 
 final homeProvider = StateNotifierProvider<HomeController, HomeViewGeneric>((ref) => HomeController());
 
-class HomeController extends StateNotifier<HomeViewGeneric>{
-  HomeController():super(HomeViewGeneric());
+class HomeController extends StateNotifier<HomeViewGeneric> {
+  HomeController() : super(HomeViewGeneric());
 
   TodoDto todoDto = TodoDto();
 
-  fetchTodo()async{
+  fetchTodo() async {
     state = state.update(isLoading: true);
 
-    try{
+    try {
       List<Todo> todos = await todoDto.getTodos();
 
-      state = state.update(todos: todos);
-    } catch(e) {
+      // Sort the todos list based on task name
+      // todos.sort((a, b) {
+      //   if (state.sortAsc) {
+      //     return a.taskName.compareTo(b.taskName);
+      //   } else {
+      //     return b.taskName.compareTo(a.taskName);
+      //   }
+      // });
+      todos = sortAccordingly(todos: todos);
 
-    }
+      state = state.update(todos: todos);
+    } catch (e) {}
 
     state = state.update(isLoading: false);
   }
 
-  addTodo({required Todo todo})async{
+  sortAccordingly({required List<Todo> todos}) {
+    todos.sort((a, b) {
+      if (state.sortAsc) {
+        return a.taskName.compareTo(b.taskName);
+      } else {
+        return b.taskName.compareTo(a.taskName);
+      }
+    });
+    return todos;
+  }
 
+  changeSorting(String clickedBtn){
+    if(clickedBtn == "Asc") {
+      state = state.update(sortDes: false, sortAsc: true);
+      fetchTodo();
+    } else {
+      state = state.update(sortAsc: false, sortDes: true);
+      fetchTodo();
+    }
+  }
+
+  addTodo({required Todo todo}) async {
     state = state.update(isLoading: true);
 
     await todoDto.putTodo(todo: todo);
 
     fetchTodo();
-
   }
 
   updateTodo({required Todo todo, required int index}) async {
@@ -43,11 +70,11 @@ class HomeController extends StateNotifier<HomeViewGeneric>{
   }
 
   deleteTodo({required int index, required Todo todo}) async {
-     // state.todos.removeAt(index);
-     // state = state.update(todos: state.todos);
+    // state.todos.removeAt(index);
+    // state = state.update(todos: state.todos);
 
-     await todoDto.deleteTodo(todo: todo);
+    await todoDto.deleteTodo(todo: todo);
 
-     fetchTodo();
+    fetchTodo();
   }
 }

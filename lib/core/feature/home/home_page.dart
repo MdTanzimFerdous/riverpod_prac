@@ -69,24 +69,6 @@ class _HomeState extends ConsumerState<Home> {
                 suffixIcon: IconButton(
                   icon: const Icon(Icons.add),
                   onPressed: () async {
-                    // if (_controller.text.isNotEmpty) {
-                    //   Uuid uuid = const Uuid();
-                    //   await ref.read(homeProvider.notifier).addTodo(
-                    //         todo: Todo(
-                    //           id: uuid.v4(),
-                    //           taskName: _controller.text.trim(),
-                    //           taskPriorityLevel: 1,
-                    //           taskCategory: '',
-                    //         ),
-                    //       );
-                    //
-                    //   _controller.clear();
-                    // }
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Please add a TODO first'),
-                      ),
-                    );
                     if (_controller.text.isNotEmpty) {
                       final result = await showDialog<Map<String, dynamic>>(
                         context: context,
@@ -105,23 +87,58 @@ class _HomeState extends ConsumerState<Home> {
                             );
                         _controller.clear();
                       }
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Please add a TODO first'),
+                        ),
+                      );
                     }
                   },
                 ),
               ),
             ),
             const SizedBox(height: 20),
+            Row(
+              children: [
+                const Text(
+                  "SORT BY NAME: ",
+                  style: TextStyle(
+                    color: Colors.brown,
+                  ),
+                ),
+                const Spacer(),
+                GestureDetector(
+                  onTap: () {
+                    ref.read(homeProvider.notifier).changeSorting("Asc");
+                  },
+                  child: Icon(
+                    Icons.arrow_downward,
+                    color: (homeController.sortAsc) ? Colors.green[600] : Colors.grey,
+                  ),
+                ),
+                GestureDetector(
+                  onTap: () {
+                    ref.read(homeProvider.notifier).changeSorting("Dsc");
+                  },
+                  child: Icon(
+                    Icons.arrow_upward,
+                    color: (homeController.sortDes) ? Colors.green[600] : Colors.grey,
+                  ),
+                ),
+              ],
+            ),
             Expanded(
               child: ListView.builder(
                 itemCount: homeController.todos.length,
                 itemBuilder: (context, index) {
                   Todo singleTodo = homeController.todos[index];
-                  final filteredTodoList = homeController.todos
-                      .where((element) => element.taskPriorityLevel == homeController.todos[index].taskPriorityLevel);
-
-                  print(filterController.priorities[singleTodo.taskPriorityLevel]);
-                  print(singleTodo.taskPriorityLevel);
-                  print(filterController.priorities);
+                  // final filteredTodoList = homeController.todos
+                  //     .where((element) => element.taskPriorityLevel == homeController.todos[index].taskPriorityLevel);
+                  //
+                  // print(filterController.priorities[singleTodo.taskPriorityLevel]);
+                  // print(singleTodo.taskPriorityLevel);
+                  // print(filterController.priorities);
 
                   return (!(filterController.priorities[singleTodo.taskPriorityLevel - 1]))
                       ? const SizedBox()
@@ -160,23 +177,41 @@ class _HomeState extends ConsumerState<Home> {
                                         ),
                                       ),
                                       const SizedBox(height: 4.0),
-                                      Text(
-                                        AppConstant.priorityMeans[singleTodo.taskPriorityLevel - 1],
-                                        style: TextStyle(
-                                          color: Colors.grey[600],
-                                          fontStyle: FontStyle.italic,
+                                      Row(children: [
+                                        Text(
+                                          "Priority Level: ",
+                                          style: TextStyle(
+                                            color: Colors.grey[600],
+                                            fontStyle: FontStyle.italic,
+                                          ),
                                         ),
-                                      ),
-                                      const SizedBox(height: 4.0),
-                                      Text(
-                                        singleTodo.taskCategory,
-                                        style: const TextStyle(
-                                          color: Colors.blueAccent,
+                                        Text(
+                                          AppConstant.priorityMeans[singleTodo.taskPriorityLevel - 1],
+                                          style: const TextStyle(
+                                            color: Colors.blueAccent,
+                                            fontStyle: FontStyle.italic,
+                                          ),
                                         ),
-                                      ),
+                                      ]),
+                                      Row(children: [
+                                        Text(
+                                          "Category: ",
+                                          style: TextStyle(
+                                            color: Colors.grey[600],
+                                            fontStyle: FontStyle.italic,
+                                          ),
+                                        ),
+                                        Text(
+                                          singleTodo.taskCategory,
+                                          style: const TextStyle(
+                                            color: Colors.blueAccent,
+                                            fontStyle: FontStyle.italic,
+                                          ),
+                                        ),
+                                      ]),
                                     ],
                                   ),
-                                  Row(
+                                  Column(
                                     children: [
                                       IconButton(
                                         icon: const Icon(
@@ -205,14 +240,58 @@ class _HomeState extends ConsumerState<Home> {
                                                   ),
                                                   TextButton(
                                                     child: const Text('OK'),
-                                                    onPressed: () {
+                                                    onPressed: () async {
                                                       print(_updatedTaskName.text);
                                                       singleTodo.taskName = _updatedTaskName.text;
-                                                      ref.read(homeProvider.notifier).updateTodo(
-                                                            todo: singleTodo,
-                                                            index: index,
-                                                          );
-                                                      Navigator.of(context).pop();
+
+                                                      // ref.read(homeProvider.notifier).updateTodo(
+                                                      //   todo: singleTodo,
+                                                      //   index: index,
+                                                      // );
+                                                      // Navigator.of(context).pop();
+
+                                                      if (_updatedTaskName.text.isNotEmpty) {
+                                                        final result = await showDialog<Map<String, dynamic>>(
+                                                          context: context,
+                                                          builder: (context) => const TaskDetailsDialog(),
+                                                        );
+                                                        if (result != null) {
+                                                          print(result['priority']);
+                                                          print(result['category']);
+                                                          singleTodo.taskPriorityLevel = result['priority'];
+                                                          singleTodo.taskCategory = result['category'];
+                                                        }
+                                                        // if(result != null) {
+                                                        //   Todo res = Todo.fromJson(result);
+                                                        //   print("Res P = ${res.taskPriorityLevel.toString()}");
+                                                        //   print("Res TC = ${res.taskCategory.toString()}");
+                                                        // }
+
+                                                        //
+                                                        // if (result != null) {
+                                                        //   Uuid uuid = const Uuid();
+                                                        //   await ref.read(homeProvider.notifier).addTodo(
+                                                        //     todo: Todo(
+                                                        //       id: uuid.v4(),
+                                                        //       taskName: _controller.text.trim(),
+                                                        //       taskPriorityLevel: result['priority'],
+                                                        //       taskCategory: result['category'],
+                                                        //     ),
+                                                        //   );
+                                                        //   _controller.clear();
+                                                        // }
+                                                        ref.read(homeProvider.notifier).updateTodo(
+                                                              todo: singleTodo,
+                                                              index: index,
+                                                            );
+                                                        Navigator.of(context).pop();
+                                                      } else {
+                                                        ScaffoldMessenger.of(context).showSnackBar(
+                                                          const SnackBar(
+                                                            content: Text('Please add a TODO first'),
+                                                          ),
+                                                        );
+                                                      }
                                                     },
                                                   ),
                                                 ],
