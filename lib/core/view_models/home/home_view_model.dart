@@ -24,6 +24,7 @@ class HomeController extends StateNotifier<HomeViewGeneric> {
       //     return b.taskName.compareTo(a.taskName);
       //   }
       // });
+
       todos = sortAccordingly(todos: todos);
 
       state = state.update(todos: todos);
